@@ -165,11 +165,11 @@ export function QuizScreen() {
 function Header({ n, total }: { n: number; total: number }) {
   const pct = (n / total) * 100;
   return (
-    <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-4 md:py-5">
-      <div className="justify-self-start">
+    <header className="flex flex-col gap-3 py-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4 md:py-5">
+      <div className="md:justify-self-start">
         <Logo />
       </div>
-      <div className="w-[min(28rem,80vw)] justify-self-center">
+      <div className="w-full md:w-[min(28rem,80vw)] md:justify-self-center">
         <div className="text-center font-body text-sm font-semibold text-body">
           Question {n} of {total}
         </div>
@@ -182,7 +182,7 @@ function Header({ n, total }: { n: number; total: number }) {
           />
         </div>
       </div>
-      <div className="justify-self-end" />
+      <div className="hidden md:block md:justify-self-end" />
     </header>
   );
 }
@@ -238,7 +238,7 @@ function ScaleButtons({
   const values = useMemo(() => [1, 2, 3, 4, 5] as const, []);
   return (
     <div
-      className="mt-7 grid grid-cols-5 items-start gap-2 sm:gap-4"
+      className="mt-7 grid grid-cols-5 items-start gap-3 sm:gap-4"
       role="radiogroup"
       aria-label="Rate from 1 (not at all) to 5 (exactly like me)"
     >
@@ -252,7 +252,7 @@ function ScaleButtons({
             disabled={disabled}
             onClick={() => onPick(v)}
             className={
-              "flex h-14 w-14 items-center justify-center rounded-full border-2 font-display text-xl font-bold transition-colors sm:h-16 sm:w-16 sm:text-2xl " +
+              "flex h-12 w-12 items-center justify-center rounded-full border-2 font-display text-lg font-bold transition-colors sm:h-16 sm:w-16 sm:text-2xl " +
               (selected === v
                 ? "border-primary bg-primary text-white shadow-card"
                 : "border-border bg-surface text-ink hover:border-primary/50") +
@@ -261,7 +261,7 @@ function ScaleButtons({
           >
             {v}
           </button>
-          <span className="mt-2 h-4 text-center font-body text-xs text-body">
+          <span className="mt-2 text-center font-body text-[10px] leading-tight text-body sm:text-xs">
             {v === 1 ? "Not at all" : v === 5 ? "Exactly like me" : ""}
           </span>
         </div>
@@ -338,6 +338,7 @@ function CornerArt() {
           alt=""
           width={120}
           height={120}
+          real
         />
       </div>
       <div className="pointer-events-none absolute bottom-3 right-3 z-0 hidden md:block">
@@ -346,6 +347,7 @@ function CornerArt() {
           alt=""
           width={120}
           height={120}
+          real
         />
       </div>
     </>

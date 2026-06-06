@@ -141,7 +141,7 @@ function StartContent({ schoolName, onSubmit }: StartContentProps) {
       >
         <Header />
 
-        <section className="flex flex-1 items-center pb-6 md:pb-10">
+        <section className="flex flex-1 items-center pb-6 pt-6 md:pb-10 md:pt-0">
           <div className="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
             <Hero schoolName={schoolName} />
             <motion.div
@@ -390,6 +390,7 @@ function CornerArt() {
           alt=""
           width={120}
           height={120}
+          real
         />
       </div>
       <div className="pointer-events-none absolute bottom-3 right-3 z-0 hidden md:block">
@@ -398,6 +399,7 @@ function CornerArt() {
           alt=""
           width={120}
           height={120}
+          real
         />
       </div>
     </>

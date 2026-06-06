@@ -155,7 +155,7 @@ export function ResultScreen() {
       >
         <Header studentId={result.studentId} />
 
-        <motion.div variants={itemVariants} className="mt-1 text-center">
+        <motion.div variants={itemVariants} className="mt-5 text-center md:mt-1">
           <h1 className="relative inline-block font-display text-3xl font-bold text-brand sm:text-4xl">
             <Sparkles
               className="absolute -left-7 -top-2 h-5 w-5 text-primary/70"
@@ -174,18 +174,20 @@ export function ResultScreen() {
           </p>
         </motion.div>
 
-        <main className="grid flex-1 grid-cols-1 items-center gap-6 py-3 md:grid-cols-[1.25fr_1fr] md:gap-10">
+        <main className="grid flex-1 grid-cols-1 items-center gap-6 py-3 md:grid-cols-[1fr_1.1fr] md:gap-10">
+          {/* Mobile order: character/card first, wheel below. Desktop order:
+              wheel on the left, card on the right. */}
           <motion.div
             variants={itemVariants}
-            className="flex items-center justify-center"
+            className="order-2 flex items-center justify-center md:order-1"
           >
             <StrengthWheel
               scores={result.scores}
-              className="max-w-[460px]"
+              className="max-w-[400px]"
             />
           </motion.div>
 
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="order-1 md:order-2">
             <TopStrengthCard topKey={topKey} score={topScore} />
           </motion.div>
         </main>
@@ -288,7 +290,7 @@ function TopStrengthCard({
           src={charSrc}
           alt=""
           onError={() => setImgFailed(true)}
-          className="relative z-10 -mb-14 h-[170px] w-auto select-none object-contain drop-shadow-[0_10px_18px_rgba(30,41,59,0.10)]"
+          className="relative z-10 -mb-16 h-[180px] w-auto select-none object-contain drop-shadow-[0_10px_18px_rgba(30,41,59,0.10)] sm:h-[210px]"
         />
       ) : (
         <div
@@ -310,7 +312,7 @@ function TopStrengthCard({
       {/* The card itself. pt-[72px] reserves vertical space below where the
           character image overlaps, so heading and body text are never
           hidden behind the illustration. */}
-      <div className="w-full rounded-card border border-border bg-surface px-5 pb-5 pt-[72px] text-center shadow-card">
+      <div className="w-full rounded-card border border-border bg-surface px-5 pb-5 pt-[78px] text-center shadow-card sm:pt-[92px]">
         <p className="font-body text-xs font-semibold uppercase tracking-wider text-body">
           Your top strength
         </p>
@@ -459,6 +461,7 @@ function CornerArt() {
           alt=""
           width={120}
           height={120}
+          real
         />
       </div>
       <div className="pointer-events-none absolute bottom-3 right-3 z-0 hidden md:block">
@@ -467,6 +470,7 @@ function CornerArt() {
           alt=""
           width={120}
           height={120}
+          real
         />
       </div>
     </>
