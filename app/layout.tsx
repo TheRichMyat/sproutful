@@ -17,9 +17,12 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Sproutful — Discover the spark within.",
+  title: {
+    default: "Sproutful",
+    template: "%s · Sproutful",
+  },
   description:
-    "Sproutful helps students discover their Multiple Intelligences and helps schools see results.",
+    "Discover the spark within — a Multiple Intelligences self-assessment for students.",
 };
 
 export default function RootLayout({
