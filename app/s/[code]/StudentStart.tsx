@@ -388,8 +388,8 @@ function CornerArt() {
         <Illustration
           src="corner-plant-left.png"
           alt=""
-          width={120}
-          height={120}
+          width={360}
+          height={360}
           real
         />
       </div>
@@ -397,8 +397,8 @@ function CornerArt() {
         <Illustration
           src="corner-plant-right.png"
           alt=""
-          width={120}
-          height={120}
+          width={360}
+          height={360}
           real
         />
       </div>
