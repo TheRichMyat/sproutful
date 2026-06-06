@@ -1,26 +1,38 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Sproutful design tokens. See DESIGN.md §4 (colors) and §5 (typography, shape).
+ * Tailwind v4 reads `@theme` and exposes each token as a CSS variable AND a
+ * utility class (e.g. `--color-brand` → `bg-brand`, `text-brand`, `border-brand`;
+ * `--font-display` → `font-display`).
+ */
+@theme {
+  /* UI chrome — §4 */
+  --color-brand: #2A6F6B;
+  --color-ink: #1E293B;
+  --color-body: #475569;
+  --color-primary: #F26A4F;
+  --color-primary-hover: #E15A40;
+  --color-bg: #FAF6EE;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #F3EFE4;
+  --color-border: #E7E0D2;
+
+  /* Typography — §5. Fonts are wired in app/layout.tsx via next/font/google. */
+  --font-display: var(--font-display), "Baloo 2", system-ui, sans-serif;
+  --font-body: var(--font-body), "Nunito", system-ui, sans-serif;
+
+  /* Shape & depth — §5 */
+  --radius-card: 20px;
+  --radius-input: 12px;
+  --shadow-card: 0 8px 24px rgba(30, 41, 59, 0.06);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/*
+ * The 8 intelligence colors (§4) intentionally live in `lib/intelligences.ts`
+ * — they're consumed by the wheel, chips, and icon labels via JS, not utility
+ * classes. Keeping them out of @theme prevents naming clashes with the chrome
+ * tokens above (e.g. body text color vs. body_smart intelligence color).
+ */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+html, body { background: var(--color-bg); }
