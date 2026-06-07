@@ -125,12 +125,14 @@ type StartContentProps = {
 };
 
 function StartContent({ schoolName, onSubmit }: StartContentProps) {
-  // The page is sized to a single desktop viewport (~1280×800): nav row,
-  // hero (vertically centered in the remaining space), then the form card
-  // pulled up so it overlaps the hero's lower edge. Mobile/narrow widths
-  // stack and scroll as normal.
+  // The page is sized to a single desktop viewport: nav row, hero
+  // (vertically centered in the remaining space), then the form card
+  // pulled up so it overlaps the hero's lower edge. On desktop we lock to
+  // h-screen + overflow-hidden so the corner plants are always visible at
+  // the bottom regardless of browser height. Mobile/narrow widths stack
+  // and scroll as normal.
   return (
-    <div className="relative flex flex-1 flex-col overflow-hidden">
+    <div className="relative flex min-h-screen flex-1 flex-col overflow-hidden md:h-screen md:flex-none">
       <CornerArt />
 
       <motion.div
@@ -141,8 +143,8 @@ function StartContent({ schoolName, onSubmit }: StartContentProps) {
       >
         <Header />
 
-        <section className="flex flex-1 items-center pb-6 pt-6 md:pb-10 md:pt-0">
-          <div className="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
+        <section className="flex flex-1 items-center pb-6 pt-6 md:pb-6 md:pt-0">
+          <div className="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10">
             <Hero schoolName={schoolName} />
             <motion.div
               variants={itemVariants}
@@ -163,7 +165,7 @@ function StartContent({ schoolName, onSubmit }: StartContentProps) {
 
         <motion.div
           variants={itemVariants}
-          className="relative z-20 -mt-10 pb-4 md:-mt-14 md:pb-6"
+          className="relative z-20 -mt-10 pb-4 md:-mt-14 md:pb-3"
         >
           <StartFormCard onSubmit={onSubmit} />
         </motion.div>
