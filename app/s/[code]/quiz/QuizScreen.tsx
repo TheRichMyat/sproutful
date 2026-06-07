@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
+import { DocumentZoom } from "@/components/DocumentZoom";
 import { Logo } from "@/components/Logo";
 import { Illustration } from "@/components/Illustration";
 import { useStudentFlow } from "@/context/student-flow";
@@ -102,6 +103,8 @@ export function QuizScreen() {
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
+      {/* Render the document at 80% zoom — matches the start screen. */}
+      <DocumentZoom value={0.8} />
       <CornerArt />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10">
