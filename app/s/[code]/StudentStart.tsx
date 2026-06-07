@@ -22,7 +22,6 @@ import {
   User,
 } from "lucide-react";
 
-import { DocumentZoom } from "@/components/DocumentZoom";
 import { Logo } from "@/components/Logo";
 import { Illustration } from "@/components/Illustration";
 import { useStudentFlow } from "@/context/student-flow";
@@ -132,13 +131,8 @@ function StartContent({ schoolName, onSubmit }: StartContentProps) {
   // h-screen + overflow-hidden so the corner plants are always visible at
   // the bottom regardless of browser height. Mobile/narrow widths stack
   // and scroll as normal.
-  //
-  // The whole document is rendered at 80% zoom — same effect as Ctrl+- in
-  // the browser — to give a roomier, less zoomed-in feel. The zoom resets
-  // when navigating to the result screen (or any other route).
   return (
     <div className="relative flex min-h-screen flex-1 flex-col overflow-hidden md:h-screen md:flex-none">
-      <DocumentZoom value={0.8} />
       <CornerArt />
 
       <motion.div
