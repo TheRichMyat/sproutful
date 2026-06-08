@@ -143,7 +143,7 @@ function StartContent({ schoolName, onSubmit }: StartContentProps) {
       >
         <Header />
 
-        <section className="flex flex-1 items-center pb-6 pt-6 md:pb-6 md:pt-0">
+        <section className="flex flex-1 items-center pb-6 pt-6 md:pb-2 md:pt-0">
           <div className="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10">
             <Hero schoolName={schoolName} />
             <motion.div
@@ -178,7 +178,7 @@ function Header() {
   return (
     <motion.header
       variants={itemVariants}
-      className="flex items-center justify-between py-4 md:py-5"
+      className="flex items-center justify-between py-4 md:py-3"
     >
       <Logo />
       <nav className="hidden items-center gap-7 font-body text-sm text-body sm:flex">
@@ -235,7 +235,7 @@ function StartFormCard({ onSubmit }: { onSubmit: StartContentProps["onSubmit"] }
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="rounded-card bg-surface p-5 shadow-card sm:p-6"
+      className="rounded-card bg-surface p-5 shadow-card sm:p-6 md:py-5"
     >
       <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_auto]">
         <Field
@@ -291,7 +291,7 @@ function StartFormCard({ onSubmit }: { onSubmit: StartContentProps["onSubmit"] }
         </PrimaryButton>
       </div>
 
-      <hr className="my-5 border-t border-border" />
+      <hr className="my-5 border-t border-border md:my-4" />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Callout
