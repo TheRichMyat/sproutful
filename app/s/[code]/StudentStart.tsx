@@ -127,49 +127,56 @@ type StartContentProps = {
 function StartContent({ schoolName, onSubmit }: StartContentProps) {
   // The page is sized to a single desktop viewport: nav row, hero
   // (vertically centered in the remaining space), then the form card
-  // pulled up so it overlaps the hero's lower edge. On desktop we lock to
-  // h-screen + overflow-hidden so the corner plants are always visible at
-  // the bottom regardless of browser height. Mobile/narrow widths stack
-  // and scroll as normal.
+  // pulled up so it overlaps the hero's lower edge.
+  //
+  // Desktop fit: to make the whole page sit comfortably in one screen at
+  // 100% browser zoom, we render it at 125% size and then scale it down to
+  // 0.8 — the exact effect of viewing the page at 80% browser zoom. The
+  // outer wrapper is locked to the real viewport (h-screen + overflow-hidden)
+  // so the scaled-down 125vw×125vh inner becomes precisely 100vw×100vh with
+  // nothing clipped. Mobile is untouched (md:-scoped only) and scrolls
+  // normally.
   return (
-    <div className="relative flex min-h-screen flex-1 flex-col overflow-hidden md:h-screen md:flex-none">
-      <CornerArt />
-
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10"
-      >
-        <Header />
-
-        <section className="flex flex-1 items-center pb-6 pt-6 md:pb-2 md:pt-0">
-          <div className="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10">
-            <Hero schoolName={schoolName} />
-            <motion.div
-              variants={itemVariants}
-              className="flex justify-center md:justify-end"
-            >
-              <Illustration
-                src="hero.png"
-                alt="Children playing together"
-                width={560}
-                height={360}
-                className="w-full max-w-[560px]"
-                priority
-                real
-              />
-            </motion.div>
-          </div>
-        </section>
+    <div className="flex min-h-screen flex-1 flex-col md:block md:h-screen md:min-h-0 md:flex-none md:overflow-hidden">
+      <div className="relative flex min-h-screen flex-1 flex-col overflow-hidden md:h-[125vh] md:w-[125vw] md:min-h-0 md:flex-none md:origin-top-left md:[transform:scale(0.8)]">
+        <CornerArt />
 
         <motion.div
-          variants={itemVariants}
-          className="relative z-20 -mt-10 pb-4 md:-mt-14 md:pb-3"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10"
         >
-          <StartFormCard onSubmit={onSubmit} />
+          <Header />
+
+          <section className="flex flex-1 items-center pb-6 pt-6 md:pb-2 md:pt-0">
+            <div className="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10">
+              <Hero schoolName={schoolName} />
+              <motion.div
+                variants={itemVariants}
+                className="flex justify-center md:justify-end"
+              >
+                <Illustration
+                  src="hero.png"
+                  alt="Children playing together"
+                  width={560}
+                  height={360}
+                  className="w-full max-w-[560px]"
+                  priority
+                  real
+                />
+              </motion.div>
+            </div>
+          </section>
+
+          <motion.div
+            variants={itemVariants}
+            className="relative z-20 -mt-10 pb-4 md:-mt-14 md:pb-3"
+          >
+            <StartFormCard onSubmit={onSubmit} />
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }
