@@ -28,12 +28,13 @@ import {
   Search,
   Sparkles,
   Star,
+  Trash2,
   User,
   Users,
 } from "lucide-react";
 
 import { Logo } from "@/components/Logo";
-import { fetchResults, type ResultRow } from "@/lib/api";
+import { deleteResult, fetchResults, type ResultRow } from "@/lib/api";
 import {
   INTELLIGENCES,
   INTELLIGENCE_ORDER,
@@ -79,6 +80,7 @@ export function Dashboard({ code }: { code: string }) {
 
   return (
     <DashboardShell
+      code={code}
       schoolName={state.schoolName}
       results={state.results}
     />
@@ -88,12 +90,18 @@ export function Dashboard({ code }: { code: string }) {
 // ---------- Shell with sidebar + main ----------
 
 function DashboardShell({
+  code,
   schoolName,
-  results,
+  results: initialResults,
 }: {
+  code: string;
   schoolName: string;
   results: ResultRow[];
 }) {
+  // The fetched rows live in state so a confirmed delete can drop one row
+  // from the on-screen list (the "Showing X of Y" count and pagination are
+  // derived from this, so they update automatically).
+  const [results, setResults] = useState<ResultRow[]>(initialResults);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
 
@@ -101,6 +109,10 @@ function DashboardShell({
   useEffect(() => {
     setPage(1);
   }, [query]);
+
+  const handleDeleted = useCallback((studentId: string) => {
+    setResults((rs) => rs.filter((r) => r.student_id !== studentId));
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -154,7 +166,11 @@ function DashboardShell({
             <>
               <div className="min-h-0 flex-1 overflow-auto rounded-card border border-border bg-surface shadow-card">
                 {pageRows.length > 0 ? (
-                  <ResultsTable rows={pageRows} />
+                  <ResultsTable
+                    rows={pageRows}
+                    code={code}
+                    onDeleted={handleDeleted}
+                  />
                 ) : (
                   <div className="flex h-full min-h-[160px] items-center justify-center px-6 py-10 text-center font-body text-sm text-body">
                     No students match &ldquo;{query}&rdquo;.
@@ -274,21 +290,30 @@ function Toolbar({
 
 // ---------- Results table ----------
 
-// Column widths (px). Sum = 1156. The page content is centered in a
-// max-w-7xl (1280px) container with px-6 padding on each side, giving
-// 1232px of usable table-card width — so this leaves ~76px of breathing
-// room. Below the table's natural width the outer `overflow-x-auto` kicks
-// in and the Student column is sticky so the name/ID stays visible while
-// scrolling.
+// Column widths (px). Sum = 1208 (incl. the 52px actions column). The page
+// content is centered in a max-w-7xl (1280px) container with px-6 padding on
+// each side, giving 1232px of usable table-card width — so this still fits
+// without horizontal scroll. Below the table's natural width the outer
+// `overflow-x-auto` kicks in and the Student column is sticky so the name/ID
+// stays visible while scrolling.
 const COL_W = {
   student: 220,
-  year: 72,
-  class: 72,
+  year: 64,
+  class: 64,
   score: 76, // × 8
-  top: 180,
+  top: 172,
+  actions: 52,
 } as const;
 
-function ResultsTable({ rows }: { rows: ResultRow[] }) {
+function ResultsTable({
+  rows,
+  code,
+  onDeleted,
+}: {
+  rows: ResultRow[];
+  code: string;
+  onDeleted: (studentId: string) => void;
+}) {
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full border-collapse">
@@ -300,6 +325,7 @@ function ResultsTable({ rows }: { rows: ResultRow[] }) {
             <col key={k} style={{ width: COL_W.score }} />
           ))}
           <col style={{ width: COL_W.top }} />
+          <col style={{ width: COL_W.actions }} />
         </colgroup>
         <thead>
           <tr className="border-b border-border bg-surface-soft/60 text-left">
@@ -330,11 +356,19 @@ function ResultsTable({ rows }: { rows: ResultRow[] }) {
               );
             })}
             <ThCenter>Top Strength</ThCenter>
+            <th className="px-2 py-2.5">
+              <span className="sr-only">Actions</span>
+            </th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
-            <ResultRowView key={row.student_id} row={row} />
+            <ResultRowView
+              key={row.student_id}
+              row={row}
+              code={code}
+              onDeleted={onDeleted}
+            />
           ))}
         </tbody>
       </table>
@@ -368,12 +402,49 @@ function ThCenter({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ResultRowView({ row }: { row: ResultRow }) {
+function ResultRowView({
+  row,
+  code,
+  onDeleted,
+}: {
+  row: ResultRow;
+  code: string;
+  onDeleted: (studentId: string) => void;
+}) {
   const topKey = topKeyOf(row);
   const topIntel = INTELLIGENCES[topKey];
   const TopIcon = topIntel.icon;
+
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleConfirm() {
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await deleteResult(code, row.student_id);
+      if (res.ok) {
+        // Parent drops the row from the list, which unmounts this component.
+        onDeleted(row.student_id);
+        return;
+      }
+      setError("We couldn't delete this result. Please try again.");
+    } catch {
+      setError(
+        "We couldn't delete this result. Check your connection and try again.",
+      );
+    }
+    setDeleting(false);
+  }
+
   return (
-    <tr className="border-b border-border last:border-0">
+    <tr
+      className={
+        "border-b border-border last:border-0 transition-opacity" +
+        (deleting ? " opacity-50" : "")
+      }
+    >
       {/* Sticky-left so the name/ID stays visible when horizontal scroll
           kicks in on narrow viewports. */}
       <td className="sticky left-0 z-10 bg-surface px-3 py-2">
@@ -430,7 +501,109 @@ function ResultRowView({ row }: { row: ResultRow }) {
           </div>
         </div>
       </td>
+      <td className="px-2 py-2 text-center">
+        <button
+          type="button"
+          onClick={() => {
+            setError(null);
+            setConfirming(true);
+          }}
+          disabled={deleting}
+          aria-label={`Delete ${row.name}'s result`}
+          title="Delete result"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full text-body/40 transition-colors hover:bg-primary/10 hover:text-primary focus-visible:bg-primary/10 focus-visible:text-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {deleting ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          ) : (
+            <Trash2 className="h-4 w-4" aria-hidden />
+          )}
+        </button>
+        {confirming ? (
+          <ConfirmDeleteDialog
+            name={row.name}
+            deleting={deleting}
+            error={error}
+            onCancel={() => {
+              setConfirming(false);
+              setError(null);
+            }}
+            onConfirm={handleConfirm}
+          />
+        ) : null}
+      </td>
     </tr>
+  );
+}
+
+// ---------- Confirm delete dialog ----------
+
+function ConfirmDeleteDialog({
+  name,
+  deleting,
+  error,
+  onCancel,
+  onConfirm,
+}: {
+  name: string;
+  deleting: boolean;
+  error: string | null;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4 text-left"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Delete ${name}'s result`}
+      onClick={(e) => {
+        // Click on the backdrop (not the card) cancels — unless deleting.
+        if (e.target === e.currentTarget && !deleting) onCancel();
+      }}
+    >
+      <div className="w-full max-w-sm rounded-card border border-border bg-surface p-6 text-center shadow-card">
+        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+          <Trash2 className="h-5 w-5 text-primary" aria-hidden />
+        </div>
+        <h2 className="font-display text-lg font-bold text-ink">
+          Delete {name}&apos;s result?
+        </h2>
+        <p className="mt-1 font-body text-sm text-body">
+          This can&apos;t be undone.
+        </p>
+        {error ? (
+          <p role="alert" className="mt-3 font-body text-xs text-primary">
+            {error}
+          </p>
+        ) : null}
+        <div className="mt-5 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={deleting}
+            className="inline-flex h-10 items-center rounded-full border border-border bg-surface px-5 font-body text-sm font-bold text-body transition-colors hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={deleting}
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 font-body text-sm font-bold text-white shadow-card transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {deleting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                Deleting…
+              </>
+            ) : (
+              "Delete"
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

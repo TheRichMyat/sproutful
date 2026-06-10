@@ -36,6 +36,10 @@ export type ResultsResponse =
   | { ok: true; school_name: string; results: ResultRow[] }
   | { ok: false };
 
+export type DeleteResponse =
+  | { ok: true }
+  | { ok: false };
+
 type Payload =
   | { action: "resolve"; student_code: string }
   | {
@@ -44,7 +48,8 @@ type Payload =
       student: StudentInfo;
       scores: Scores;
     }
-  | { action: "results"; dashboard_code: string };
+  | { action: "results"; dashboard_code: string }
+  | { action: "delete"; dashboard_code: string; student_id: string };
 
 /**
  * POST a JSON payload to the backend. Throws if the env var is missing or the
@@ -86,4 +91,17 @@ export function submitQuiz(
 
 export function fetchResults(dashboard_code: string) {
   return callBackend<ResultsResponse>({ action: "results", dashboard_code });
+}
+
+/**
+ * Delete one student's result. The backend validates `dashboard_code` server
+ * side (an unknown/missing code returns `{ ok: false }`) and removes the row
+ * matching `student_id` from that school's data Sheet.
+ */
+export function deleteResult(dashboard_code: string, student_id: string) {
+  return callBackend<DeleteResponse>({
+    action: "delete",
+    dashboard_code,
+    student_id,
+  });
 }
