@@ -24,7 +24,10 @@ import {
 
 import { Logo } from "@/components/Logo";
 import { Illustration } from "@/components/Illustration";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { useStudentFlow } from "@/context/student-flow";
+import { useLanguage } from "@/context/language";
+import { UI, format } from "@/lib/i18n";
 import { resolveStudentCode } from "@/lib/api";
 import { CLASS_OPTIONS, YEAR_OPTIONS } from "@/config/options";
 
@@ -73,17 +76,19 @@ export function StudentStart() {
 // ---------- States ----------
 
 function LinkLoading() {
+  const { t } = useLanguage();
   return (
     <main className="flex flex-1 items-center justify-center px-6">
       <div className="flex flex-col items-center gap-3 text-body">
         <Loader2 className="h-7 w-7 animate-spin text-brand" aria-hidden />
-        <p className="font-body text-sm">Getting things ready…</p>
+        <p className="font-body text-sm">{t(UI.start_loading)}</p>
       </div>
     </main>
   );
 }
 
 function LinkNotFound() {
+  const { t } = useLanguage();
   return (
     <main className="flex flex-1 items-center justify-center px-6">
       <motion.div
@@ -96,12 +101,9 @@ function LinkNotFound() {
           <Compass className="h-6 w-6 text-brand" aria-hidden />
         </div>
         <h1 className="font-display text-2xl font-bold text-ink">
-          Link not found
+          {t(UI.linknotfound_title)}
         </h1>
-        <p className="mt-2 text-body">
-          This link doesn&apos;t look right. Please ask your school for the correct
-          link and try again.
-        </p>
+        <p className="mt-2 text-body">{t(UI.linknotfound_body_student)}</p>
       </motion.div>
     </main>
   );
@@ -182,35 +184,42 @@ function StartContent({ schoolName, onSubmit }: StartContentProps) {
 }
 
 function Header() {
+  const { t } = useLanguage();
   return (
     <motion.header
       variants={itemVariants}
       className="flex items-center justify-between py-4 md:py-3"
     >
       <Logo />
-      <nav className="hidden items-center gap-7 font-body text-sm text-body sm:flex">
-        <a href="#about" className="hover:text-ink">About Sproutful</a>
-        <a href="#how" className="hover:text-ink">How It Works</a>
-        <a href="#benefits" className="hover:text-ink">Benefits</a>
-      </nav>
+      <div className="flex items-center gap-4">
+        <nav className="hidden items-center gap-7 font-body text-sm text-body sm:flex">
+          <a href="#about" className="hover:text-ink">{t(UI.nav_about)}</a>
+          <a href="#how" className="hover:text-ink">{t(UI.nav_how)}</a>
+          <a href="#benefits" className="hover:text-ink">{t(UI.nav_benefits)}</a>
+        </nav>
+        <LanguageToggle />
+      </div>
     </motion.header>
   );
 }
 
 function Hero({ schoolName }: { schoolName: string }) {
+  const { t } = useLanguage();
   return (
     <motion.div variants={itemVariants} className="flex flex-col">
       <p className="font-body text-xs font-semibold uppercase tracking-wider text-brand">
-        Welcome, {schoolName} students
+        {format(t(UI.start_welcome), { school: schoolName })}
       </p>
       <h1 className="mt-2 font-display text-4xl font-bold leading-[1.05] text-ink sm:text-5xl lg:text-[3.5rem]">
-        <span className="block">Discover.</span>
-        <span className="block">Understand.</span>
-        <span className="block text-primary">Grow.</span>
+        <span className="block">{t(UI.start_discover)}</span>
+        <span className="block">{t(UI.start_understand)}</span>
+        <span className="block text-primary">{t(UI.start_grow)}</span>
       </h1>
       <p className="mt-4 max-w-md font-body text-sm leading-relaxed text-body sm:text-base">
-        Uncover your unique strengths through Multiple Intelligences and learn
-        in the way that&apos;s best for you.
+        {t(UI.start_subtext)}
+      </p>
+      <p className="mt-3 font-display text-sm italic text-brand/80">
+        {t(UI.start_credit)}
       </p>
     </motion.div>
   );
@@ -219,6 +228,7 @@ function Hero({ schoolName }: { schoolName: string }) {
 // ---------- Form ----------
 
 function StartFormCard({ onSubmit }: { onSubmit: StartContentProps["onSubmit"] }) {
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [year, setYear] = useState("");
   const [klass, setKlass] = useState("");
@@ -246,30 +256,32 @@ function StartFormCard({ onSubmit }: { onSubmit: StartContentProps["onSubmit"] }
     >
       <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_auto]">
         <Field
-          label="Name"
+          label={t(UI.start_field_name)}
           icon={<User className="h-4 w-4 text-brand" aria-hidden />}
-          error={showErrors && name.trim() === "" ? "Enter your name" : undefined}
+          error={
+            showErrors && name.trim() === "" ? t(UI.start_err_name) : undefined
+          }
         >
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
+            placeholder={t(UI.start_placeholder_name)}
             className="w-full rounded-input border border-border bg-surface px-4 py-3 font-body text-ink placeholder:text-body/60 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
           />
         </Field>
 
         <Field
-          label="Year"
+          label={t(UI.start_field_year)}
           icon={<Calendar className="h-4 w-4 text-brand" aria-hidden />}
-          error={showErrors && year === "" ? "Pick a year" : undefined}
+          error={showErrors && year === "" ? t(UI.start_err_year) : undefined}
         >
           <select
             value={year}
             onChange={(e) => setYear(e.target.value)}
             className="w-full appearance-none rounded-input border border-border bg-surface px-4 py-3 font-body text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
           >
-            <option value="">Select your year</option>
+            <option value="">{t(UI.start_placeholder_year)}</option>
             {YEAR_OPTIONS.map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
@@ -277,16 +289,16 @@ function StartFormCard({ onSubmit }: { onSubmit: StartContentProps["onSubmit"] }
         </Field>
 
         <Field
-          label="Class"
+          label={t(UI.start_field_class)}
           icon={<GraduationCap className="h-4 w-4 text-brand" aria-hidden />}
-          error={showErrors && klass === "" ? "Pick a class" : undefined}
+          error={showErrors && klass === "" ? t(UI.start_err_class) : undefined}
         >
           <select
             value={klass}
             onChange={(e) => setKlass(e.target.value)}
             className="w-full appearance-none rounded-input border border-border bg-surface px-4 py-3 font-body text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
           >
-            <option value="">Select your class</option>
+            <option value="">{t(UI.start_placeholder_class)}</option>
             {CLASS_OPTIONS.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
@@ -294,7 +306,7 @@ function StartFormCard({ onSubmit }: { onSubmit: StartContentProps["onSubmit"] }
         </Field>
 
         <PrimaryButton type="submit" disabled={!isValid && showErrors}>
-          Start My Journey
+          {t(UI.start_button)}
         </PrimaryButton>
       </div>
 
@@ -303,18 +315,18 @@ function StartFormCard({ onSubmit }: { onSubmit: StartContentProps["onSubmit"] }
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Callout
           icon={<Sparkles className="h-5 w-5 text-brand" aria-hidden />}
-          title="Personalized Insights"
-          body="Understand your unique strengths."
+          title={t(UI.start_callout1_title)}
+          body={t(UI.start_callout1_body)}
         />
         <Callout
           icon={<Compass className="h-5 w-5 text-brand" aria-hidden />}
-          title="Learn Your Way"
-          body="Find the path that fits you best."
+          title={t(UI.start_callout2_title)}
+          body={t(UI.start_callout2_body)}
         />
         <Callout
           icon={<TrendingUp className="h-5 w-5 text-brand" aria-hidden />}
-          title="Grow With Confidence"
-          body="Build on what makes you, you."
+          title={t(UI.start_callout3_title)}
+          body={t(UI.start_callout3_body)}
         />
       </div>
     </form>

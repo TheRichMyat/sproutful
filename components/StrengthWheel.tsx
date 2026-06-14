@@ -20,6 +20,7 @@
 // The wheel is drawn live from `scores` — never a static image.
 
 import { LogoMark } from "@/components/Logo";
+import { useLanguage } from "@/context/language";
 import {
   INTELLIGENCES,
   INTELLIGENCE_ORDER,
@@ -313,6 +314,7 @@ function WheelLabel({
   labelRadius: number;
   compact: boolean;
 }) {
+  const { t } = useLanguage();
   const { x, y } = pt(angleDeg, labelRadius);
   // Percentages keep labels in place when the SVG scales with the container.
   const pctX = (x / SVG) * 100;
@@ -320,7 +322,9 @@ function WheelLabel({
   const Icon = intel.icon;
   // Compact mode drops the "Smart" suffix so labels are narrow enough to
   // stay clear of adjacent labels and the score pills at small render sizes.
-  const text = compact ? intel.label.replace(/\s*Smart$/i, "") : intel.label;
+  // (The regex only matches English; Myanmar labels render in full.)
+  const full = t(intel.label);
+  const text = compact ? full.replace(/\s*Smart$/i, "") : full;
   return (
     <div
       className={

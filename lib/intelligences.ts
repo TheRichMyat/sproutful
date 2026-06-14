@@ -16,80 +16,102 @@ import {
 } from "lucide-react";
 
 import type { IntelligenceKey } from "./questions";
+import type { Bilingual } from "./i18n";
 
 export type Intelligence = {
   key: IntelligenceKey;
-  label: string;
+  /** Display name. EN is canonical; fill `my` with the Burmese name. */
+  label: Bilingual;
   color: string;
   icon: LucideIcon;
-  /** One-sentence description for the "top strength" card (DESIGN.md §6.3). */
-  description: string;
+  /**
+   * One-sentence description for the "top strength" card (DESIGN.md §6.3).
+   * EN is canonical; fill `my` with the Burmese translation. Empty `my`
+   * falls back to EN at render time.
+   */
+  description: Bilingual;
 };
 
 export const INTELLIGENCES: Record<IntelligenceKey, Intelligence> = {
   word_smart: {
     key: "word_smart",
-    label: "Word Smart",
+    label: { en: "Word Smart", my: "" },
     color: "#EF6F61",
     icon: BookOpen,
-    description:
-      "You think in words and love reading, writing, and storytelling.",
+    description: {
+      en: "You think in words and love reading, writing, and storytelling.",
+      my: "",
+    },
   },
   logic_smart: {
     key: "logic_smart",
-    label: "Logic Smart",
+    label: { en: "Logic Smart", my: "" },
     color: "#F4B740",
     icon: Calculator,
-    description:
-      "You enjoy numbers, patterns, problem-solving, and figuring out how things work.",
+    description: {
+      en: "You enjoy numbers, patterns, problem-solving, and figuring out how things work.",
+      my: "",
+    },
   },
   music_smart: {
     key: "music_smart",
-    label: "Music Smart",
+    label: { en: "Music Smart", my: "" },
     color: "#3BA6A0",
     icon: Music,
-    description:
-      "You have a natural ability to understand, create, and express through music.",
+    description: {
+      en: "You have a natural ability to understand, create, and express through music.",
+      my: "",
+    },
   },
   picture_smart: {
     key: "picture_smart",
-    label: "Picture Smart",
+    label: { en: "Picture Smart", my: "" },
     color: "#5B8DEF",
     icon: ImageIcon,
-    description:
-      "You think in pictures and are great with space, design, and visual ideas.",
+    description: {
+      en: "You think in pictures and are great with space, design, and visual ideas.",
+      my: "",
+    },
   },
   body_smart: {
     key: "body_smart",
-    label: "Body Smart",
+    label: { en: "Body Smart", my: "" },
     color: "#6CC07A",
     icon: PersonStanding,
-    description:
-      "You learn by doing and moving, with great coordination and physical skill.",
+    description: {
+      en: "You learn by doing and moving, with great coordination and physical skill.",
+      my: "",
+    },
   },
   people_smart: {
     key: "people_smart",
-    label: "People Smart",
+    label: { en: "People Smart", my: "" },
     color: "#9B7EDE",
     icon: Users,
-    description:
-      "You understand and connect with others easily and work well in groups.",
+    description: {
+      en: "You understand and connect with others easily and work well in groups.",
+      my: "",
+    },
   },
   self_smart: {
     key: "self_smart",
-    label: "Self Smart",
+    label: { en: "Self Smart", my: "" },
     color: "#F0915A",
     icon: Heart,
-    description:
-      "You know yourself well and reflect deeply on your own thoughts and goals.",
+    description: {
+      en: "You know yourself well and reflect deeply on your own thoughts and goals.",
+      my: "",
+    },
   },
   nature_smart: {
     key: "nature_smart",
-    label: "Nature Smart",
+    label: { en: "Nature Smart", my: "" },
     color: "#7FB069",
     icon: Leaf,
-    description:
-      "You feel connected to nature, plants, animals, and the world outdoors.",
+    description: {
+      en: "You feel connected to nature, plants, animals, and the world outdoors.",
+      my: "",
+    },
   },
 };
 

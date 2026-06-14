@@ -20,6 +20,8 @@ import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Illustration } from "@/components/Illustration";
 import { useStudentFlow } from "@/context/student-flow";
+import { useLanguage } from "@/context/language";
+import { UI, format } from "@/lib/i18n";
 import { QUESTIONS, type IntelligenceKey } from "@/lib/questions";
 import { INTELLIGENCES, type Intelligence } from "@/lib/intelligences";
 import { computeScores } from "@/lib/scoring";
@@ -29,6 +31,7 @@ const TOTAL = QUESTIONS.length;
 
 export function QuizScreen() {
   const { code, student, setResult } = useStudentFlow();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const [answers, setAnswers] = useState<(number | null)[]>(() =>
@@ -89,14 +92,12 @@ export function QuizScreen() {
         router.push(`/s/${code}/result`);
         return; // leave submitting=true so the button stays disabled during nav
       }
-      setError("We couldn't save your answers. Please try again.");
+      setError(t(UI.quiz_err_generic));
     } catch {
-      setError(
-        "We couldn't save your answers. Check your connection and try again.",
-      );
+      setError(t(UI.quiz_err_network));
     }
     setSubmitting(false);
-  }, [answers, canAdvance, code, isLast, router, setResult, student]);
+  }, [answers, canAdvance, code, isLast, router, setResult, student, t]);
 
   if (!student) return <RedirectingState />;
 
@@ -120,7 +121,7 @@ export function QuizScreen() {
               >
                 <QuestionCard
                   intel={intel}
-                  text={question.text}
+                  text={t(question.text)}
                   selected={selected}
                   onPick={pick}
                   disabled={submitting}
@@ -163,6 +164,7 @@ export function QuizScreen() {
 // ---------- Header (logo + centered progress) ----------
 
 function Header({ n, total }: { n: number; total: number }) {
+  const { t } = useLanguage();
   const pct = (n / total) * 100;
   return (
     <header className="flex flex-col gap-3 py-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4 md:py-5">
@@ -171,7 +173,7 @@ function Header({ n, total }: { n: number; total: number }) {
       </div>
       <div className="w-full md:w-[min(28rem,80vw)] md:justify-self-center">
         <div className="text-center font-body text-sm font-semibold text-body">
-          Question {n} of {total}
+          {format(t(UI.quiz_progress), { n, total })}
         </div>
         <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-soft">
           <motion.div
@@ -235,6 +237,7 @@ function ScaleButtons({
   onPick: (v: number) => void;
   disabled: boolean;
 }) {
+  const { t } = useLanguage();
   const values = useMemo(() => [1, 2, 3, 4, 5] as const, []);
   return (
     <div
@@ -262,7 +265,11 @@ function ScaleButtons({
             {v}
           </button>
           <span className="mt-2 text-center font-body text-[10px] leading-tight text-body sm:text-xs">
-            {v === 1 ? "Not at all" : v === 5 ? "Exactly like me" : ""}
+            {v === 1
+              ? t(UI.quiz_scale_low)
+              : v === 5
+                ? t(UI.quiz_scale_high)
+                : ""}
           </span>
         </div>
       ))}
@@ -303,6 +310,7 @@ function NextButton({
   isLast: boolean;
   submitting: boolean;
 }) {
+  const { t } = useLanguage();
   return (
     <button
       type="button"
@@ -313,11 +321,11 @@ function NextButton({
       {submitting ? (
         <>
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-          <span>Saving…</span>
+          <span>{t(UI.quiz_saving)}</span>
         </>
       ) : (
         <>
-          <span>{isLast ? "See My Results" : "Next"}</span>
+          <span>{isLast ? t(UI.quiz_see_results) : t(UI.quiz_next)}</span>
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-primary transition-transform group-hover:translate-x-0.5">
             <ArrowRight className="h-4 w-4" aria-hidden />
           </span>
@@ -355,11 +363,12 @@ function CornerArt() {
 }
 
 function RedirectingState() {
+  const { t } = useLanguage();
   return (
     <main className="flex flex-1 items-center justify-center px-6">
       <div className="flex flex-col items-center gap-3 text-body">
         <Loader2 className="h-7 w-7 animate-spin text-brand" aria-hidden />
-        <p className="font-body text-sm">Taking you back to the start…</p>
+        <p className="font-body text-sm">{t(UI.quiz_redirecting)}</p>
       </div>
     </main>
   );

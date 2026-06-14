@@ -31,7 +31,7 @@ export default function CharactersPreviewPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={src}
-                  alt={intel.label}
+                  alt={intel.label.en}
                   className="h-44 w-auto object-contain"
                 />
                 <div className="mt-3 text-center">
@@ -39,7 +39,7 @@ export default function CharactersPreviewPage() {
                     className="font-display text-base font-bold"
                     style={{ color: intel.color }}
                   >
-                    {intel.label}
+                    {intel.label.en}
                   </div>
                   <div className="mt-0.5 font-mono text-[11px] text-body">
                     {src}

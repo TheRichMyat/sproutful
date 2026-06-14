@@ -18,9 +18,12 @@
   --color-surface-soft: #F3EFE4;
   --color-border: #E7E0D2;
 
-  /* Typography — §5. Fonts are wired in app/layout.tsx via next/font/google. */
-  --font-display: var(--font-display), "Baloo 2", system-ui, sans-serif;
-  --font-body: var(--font-body), "Nunito", system-ui, sans-serif;
+  /* Typography — §5. Fonts are wired in app/layout.tsx via next/font/google.
+   * Noto Sans Myanmar is appended to both stacks so Burmese codepoints render
+   * with it automatically (Baloo/Nunito don't include Myanmar glyphs), while
+   * Latin text keeps using Baloo/Nunito. No per-element font switching needed. */
+  --font-display: var(--font-display), "Baloo 2", var(--font-myanmar), "Noto Sans Myanmar", system-ui, sans-serif;
+  --font-body: var(--font-body), "Nunito", var(--font-myanmar), "Noto Sans Myanmar", system-ui, sans-serif;
 
   /* Shape & depth — §5 */
   --radius-card: 20px;

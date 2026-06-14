@@ -59,7 +59,11 @@ export function topIntelligence(scores: Scores): IntelligenceKey {
   return bestKey;
 }
 
-/** Friendly label for the top intelligence ("Music Smart" etc.). */
+/**
+ * Friendly English label for the top intelligence ("Music Smart" etc.).
+ * Returns the canonical EN label; for localized display read
+ * `INTELLIGENCES[key].label` through the i18n `pick()` helper instead.
+ */
 export function topIntelligenceLabel(scores: Scores): string {
-  return INTELLIGENCES[topIntelligence(scores)].label;
+  return INTELLIGENCES[topIntelligence(scores)].label.en;
 }

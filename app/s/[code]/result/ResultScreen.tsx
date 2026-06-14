@@ -25,8 +25,11 @@ import {
 
 import { Logo } from "@/components/Logo";
 import { Illustration } from "@/components/Illustration";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { StrengthWheel } from "@/components/StrengthWheel";
 import { useStudentFlow, type StudentInfo } from "@/context/student-flow";
+import { useLanguage } from "@/context/language";
+import { UI } from "@/lib/i18n";
 import {
   INTELLIGENCES,
   INTELLIGENCE_ORDER,
@@ -48,6 +51,7 @@ const itemVariants: Variants = {
 
 export function ResultScreen() {
   const { code, student, result, reset } = useStudentFlow();
+  const { t } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -134,9 +138,7 @@ export function ResultScreen() {
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err) {
       console.error("PDF generation failed:", err);
-      setDownloadError(
-        "We couldn't create the PDF. Please try again in a moment.",
-      );
+      setDownloadError(t(UI.result_pdf_err));
     } finally {
       setIsPreparing(false);
     }
@@ -161,7 +163,7 @@ export function ResultScreen() {
               className="absolute -left-7 -top-2 h-5 w-5 text-primary/70"
               aria-hidden
             />
-            Your Strengths
+            {t(UI.result_title)}
             <Star
               className="absolute -right-7 top-1 h-4 w-4 text-[#F4B740]"
               aria-hidden
@@ -170,7 +172,7 @@ export function ResultScreen() {
             />
           </h1>
           <p className="mt-1 font-body text-sm text-body sm:text-base">
-            Every mind is unique. Here&apos;s how your multiple intelligences shine.
+            {t(UI.result_subline)}
           </p>
         </motion.div>
 
@@ -206,16 +208,18 @@ export function ResultScreen() {
               {isPreparing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  <span>Preparing…</span>
+                  <span>{t(UI.result_preparing)}</span>
                 </>
               ) : (
                 <>
                   <Download className="h-4 w-4" aria-hidden />
-                  <span>Download Report</span>
+                  <span>{t(UI.result_download)}</span>
                 </>
               )}
             </button>
-            <PrimaryButton onClick={handleContinue}>Continue</PrimaryButton>
+            <PrimaryButton onClick={handleContinue}>
+              {t(UI.result_continue)}
+            </PrimaryButton>
           </div>
           {downloadError ? (
             <p role="alert" className="font-body text-xs text-primary">
@@ -243,18 +247,22 @@ export function ResultScreen() {
 // ---------- Header ----------
 
 function Header({ studentId }: { studentId: string }) {
+  const { t } = useLanguage();
   return (
     <motion.header
       variants={itemVariants}
       className="flex items-center justify-between py-4 md:py-5"
     >
       <Logo />
-      <span
-        className="inline-flex items-center rounded-full border border-border bg-surface px-3 py-1 font-mono text-xs font-semibold text-body shadow-card"
-        aria-label="Your student ID"
-      >
-        {studentId}
-      </span>
+      <div className="flex items-center gap-3">
+        <LanguageToggle />
+        <span
+          className="inline-flex items-center rounded-full border border-border bg-surface px-3 py-1 font-mono text-xs font-semibold text-body shadow-card"
+          aria-label={t(UI.result_student_id_aria)}
+        >
+          {studentId}
+        </span>
+      </div>
     </motion.header>
   );
 }
@@ -268,6 +276,7 @@ function TopStrengthCard({
   topKey: IntelligenceKey;
   score: number;
 }) {
+  const { t } = useLanguage();
   const intel = INTELLIGENCES[topKey];
   const Icon = intel.icon;
 
@@ -314,13 +323,13 @@ function TopStrengthCard({
           hidden behind the illustration. */}
       <div className="w-full rounded-card border border-border bg-surface px-5 pb-5 pt-[78px] text-center shadow-card sm:pt-[92px]">
         <p className="font-body text-xs font-semibold uppercase tracking-wider text-body">
-          Your top strength
+          {t(UI.result_top_strength)}
         </p>
         <h2
           className="mt-1.5 font-display text-2xl font-bold leading-tight sm:text-[28px]"
           style={{ color: intel.color }}
         >
-          {intel.label}
+          {t(intel.label)}
         </h2>
         <div className="mt-2 inline-flex items-baseline gap-1 rounded-full bg-surface-soft px-3 py-1 font-display text-base font-bold text-ink">
           {score.toFixed(1)}
@@ -329,12 +338,12 @@ function TopStrengthCard({
           </span>
         </div>
         <p className="mt-3 font-body text-sm leading-relaxed text-body">
-          {intel.description}
+          {t(intel.description)}
         </p>
         <div className="mt-4 flex items-center justify-center gap-2 rounded-full bg-surface-soft px-3 py-2">
           <Sparkles className="h-3.5 w-3.5 shrink-0 text-brand" aria-hidden />
           <span className="font-body text-xs font-semibold text-brand">
-            Keep exploring, keep growing!
+            {t(UI.result_keep_growing)}
           </span>
         </div>
       </div>
@@ -478,11 +487,12 @@ function CornerArt() {
 }
 
 function RedirectingState() {
+  const { t } = useLanguage();
   return (
     <main className="flex flex-1 items-center justify-center px-6">
       <div className="flex flex-col items-center gap-3 text-body">
         <Loader2 className="h-7 w-7 animate-spin text-brand" aria-hidden />
-        <p className="font-body text-sm">Taking you back to the start…</p>
+        <p className="font-body text-sm">{t(UI.result_redirecting)}</p>
       </div>
     </main>
   );
@@ -506,6 +516,7 @@ function PrintableReport({
   topKey: IntelligenceKey;
   topScore: number;
 }) {
+  const { t } = useLanguage();
   const topIntel = INTELLIGENCES[topKey];
   const charSrc = `/illustrations/characters/${topKey.replace(
     /_smart$/,
@@ -568,13 +579,13 @@ function PrintableReport({
               letterSpacing: 1.2,
             }}
           >
-            Student Result Report
+            {t(UI.pdf_report_title)}
           </span>
         </div>
 
         {/* Student info */}
         <div style={{ marginTop: 18 }}>
-          <ReportEyebrow>Student</ReportEyebrow>
+          <ReportEyebrow>{t(UI.pdf_section_student)}</ReportEyebrow>
           <div
             style={{
               display: "grid",
@@ -583,14 +594,14 @@ function PrintableReport({
               marginTop: 8,
             }}
           >
-            <ReportField label="Name" value={student?.name ?? "—"} />
+            <ReportField label={t(UI.pdf_name)} value={student?.name ?? "—"} />
             <ReportField
-              label="Student ID"
+              label={t(UI.pdf_student_id)}
               value={result.studentId}
               mono
             />
-            <ReportField label="Year" value={student?.year ?? "—"} />
-            <ReportField label="Class" value={student?.class ?? "—"} />
+            <ReportField label={t(UI.pdf_year)} value={student?.year ?? "—"} />
+            <ReportField label={t(UI.pdf_class)} value={student?.class ?? "—"} />
           </div>
         </div>
 
@@ -629,7 +640,7 @@ function PrintableReport({
               }}
             />
             <ReportEyebrow style={{ marginTop: 8 }}>
-              Your top strength
+              {t(UI.pdf_top_strength)}
             </ReportEyebrow>
             <div
               style={{
@@ -642,7 +653,7 @@ function PrintableReport({
                 color: topIntel.color,
               }}
             >
-              {topIntel.label}
+              {t(topIntel.label)}
             </div>
             <div
               style={{
@@ -667,7 +678,7 @@ function PrintableReport({
                 color: "#475569",
               }}
             >
-              {topIntel.description}
+              {t(topIntel.description)}
             </p>
           </div>
 
@@ -691,7 +702,7 @@ function PrintableReport({
 
         {/* All 8 scores */}
         <div style={{ marginTop: 20 }}>
-          <ReportEyebrow>All intelligences</ReportEyebrow>
+          <ReportEyebrow>{t(UI.pdf_all_intelligences)}</ReportEyebrow>
           <div
             style={{
               marginTop: 8,
@@ -738,7 +749,7 @@ function PrintableReport({
                       color: "#1E293B",
                     }}
                   >
-                    {intel.label}
+                    {t(intel.label)}
                   </span>
                   <span
                     style={{
@@ -778,7 +789,7 @@ function PrintableReport({
             color: "#475569",
           }}
         >
-          Sproutful — Discover the spark within.
+          {t(UI.pdf_footer)}
         </div>
       </div>
     </div>
