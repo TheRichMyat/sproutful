@@ -184,21 +184,13 @@ function StartContent({ schoolName, onSubmit }: StartContentProps) {
 }
 
 function Header() {
-  const { t } = useLanguage();
   return (
     <motion.header
       variants={itemVariants}
       className="flex items-center justify-between py-4 md:py-3"
     >
       <Logo />
-      <div className="flex items-center gap-4">
-        <nav className="hidden items-center gap-7 font-body text-sm text-body sm:flex">
-          <a href="#about" className="hover:text-ink">{t(UI.nav_about)}</a>
-          <a href="#how" className="hover:text-ink">{t(UI.nav_how)}</a>
-          <a href="#benefits" className="hover:text-ink">{t(UI.nav_benefits)}</a>
-        </nav>
-        <LanguageToggle />
-      </div>
+      <LanguageToggle />
     </motion.header>
   );
 }

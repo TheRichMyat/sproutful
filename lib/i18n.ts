@@ -57,11 +57,6 @@ const s = (en: string, my = `[MY] ${en}`): Bilingual => ({ en, my });
  * site.
  */
 export const UI = {
-  // ---- Top nav (shared) ----
-  nav_about: s("About Sproutful"),
-  nav_how: s("How It Works"),
-  nav_benefits: s("Benefits"),
-
   // ---- Student start ----
   start_welcome: s(
     "Welcome, {school} students",
@@ -120,9 +115,9 @@ export const UI = {
   quiz_progress: s("Question {n} of {total}"),
   quiz_scale_low: s("Not at all", "လုံးဝမဟုတ်ပါ"),
   quiz_scale_high: s("Exactly like me", "လုံးဝမှန်ကန်ပါသည်"),
-  quiz_next: s("Next"),
+  quiz_next: s("Next", "နောက်တစ်ခု"),
   quiz_see_results: s("See My Results"),
-  quiz_saving: s("Saving…"),
+  quiz_saving: s("Saving…", "သိမ်းနေသည်"),
   quiz_err_generic: s("We couldn't save your answers. Please try again."),
   quiz_err_network: s(
     "We couldn't save your answers. Check your connection and try again.",
@@ -130,15 +125,19 @@ export const UI = {
   quiz_redirecting: s("Taking you back to the start…"),
 
   // ---- Result ----
-  result_title: s("Your Strengths"),
+  result_title: s("Your Strengths", "သင်၏အားသာချက်များ"),
   result_subline: s(
     "Every mind is unique. Here's how your multiple intelligences shine.",
+    "လူတိုင်းမှာ ကိုယ်ပိုင်ပါရမီကိုယ်စီ ရှိကြပါတယ်။ သင်ဘယ်လိုအရာတွေမှာ ထူးချွန်ထက်မြက်သလဲဆိုတာ အတူတူ ကြည့်လိုက်ရအောင်။",
   ),
-  result_top_strength: s("Your top strength"),
-  result_keep_growing: s("Keep exploring, keep growing!"),
-  result_download: s("Download Report"),
+  result_top_strength: s("Your top strength", "သင့်ရဲ့ အားသာဆုံးအချက်"),
+  result_keep_growing: s(
+    "Keep exploring, keep growing!",
+    "ဆက်လက်ရှာဖွေလေ့လာပြီး ပိုမိုတိုးတက်အောင် လုပ်ဆောင်လိုက်ပါ။",
+  ),
+  result_download: s("Download Report", "အစီရင်ခံစာကို ဒေါင်းလုဒ်ရယူရန်"),
   result_preparing: s("Preparing…"),
-  result_continue: s("Continue"),
+  result_continue: s("Continue", "ရှေ့သို့ ဆက်သွားရန်"),
   result_pdf_err: s("We couldn't create the PDF. Please try again in a moment."),
   result_student_id_aria: s("Your student ID"),
   result_redirecting: s("Taking you back to the start…"),
@@ -151,7 +150,7 @@ export const UI = {
   pdf_student_id: s("Student ID"),
   pdf_year: s("Year"),
   pdf_class: s("Class"),
-  pdf_top_strength: s("Your top strength"),
+  pdf_top_strength: s("Your top strength", "သင့်ရဲ့ အားသာဆုံးအချက်"),
   pdf_all_intelligences: s("All intelligences"),
   pdf_footer: s("Sproutful — Discover the spark within."),
 

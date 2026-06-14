@@ -45,7 +45,7 @@ export const QUESTIONS = [
   { n: 22, key: "people_smart",  text: { en: "I respond to all people enthusiastically, free of bias or prejudice.", my: "ဘယ်သူ့ကိုမဆို ဘက်လိုက်မှု၊ ခွဲခြားမှုမရှိဘဲ တက်တက်ကြွကြွနဲ့ ဖော်ဖော်ရွေရွေ ဆက်ဆံတယ်။" } },
   { n: 23, key: "self_smart",    text: { en: "I believe that I am responsible for my actions and who I am.", my: "ကိုယ့်လုပ်ရပ်နဲ့ ကိုယ့်ဘဝအတွက် ကိုယ့်မှာပဲ တာဝန်ရှိတယ်လို့ ယုံကြည်တယ်။" } },
   { n: 24, key: "nature_smart",  text: { en: "I like learning about nature.", my: "သဘာဝတရားအကြောင်း လေ့လာရတာကို သဘောကျတယ်။" } },
-  { n: 25, key: "word_smart",    text: { en: "I enjoy hearing challenging lectures.", my: "အတွေးအခေါ်ပိုင်းကို စိန်ခေါ်တဲ့ ဟောပြောပွဲ၊ ဆွေးနွေးပွဲတွေကို နားထောင်ရတာ ကြိုက်တယ်။" } },
+  { n: 25, key: "word_smart",    text: { en: "I enjoy hearing challenging lectures.", my: "အတွေးအခေါ်ပိုင်းကို စမ်းသပ်တဲ့ ဟောပြောပွဲ၊ ဆွေးနွေးပွဲတွေကို နားထောင်ရတာ ကြိုက်တယ်။" } },
   { n: 26, key: "logic_smart",   text: { en: "Math has always been one of my favorite classes.", my: "ကျောင်းတုန်းကလည်း သင်္ချာက ကိုယ့်အကြိုက်ဆုံး ဘာသာရပ်တွေထဲက တစ်ခုဖြစ်ခဲ့တယ်။" } },
   { n: 27, key: "music_smart",   text: { en: "My music education began when I was younger and still continues today.", my: "ဂီတကို ငယ်ငယ်ကတည်းက လေ့လာခဲ့တာ အခုထိလည်း ဆက်လေ့လာနေတုန်းပဲ။" } },
   { n: 28, key: "picture_smart", text: { en: "I have the ability to represent what I see by drawing or painting.", my: "ကိုယ်မြင်ရတဲ့အရာတွေကို ပုံဆွဲတာ ဒါမှမဟုတ် ဆေးခြယ်တာမျိုးနဲ့ ပြန်ဖော်ပြနိုင်စွမ်း ရှိတယ်။" } },
