@@ -555,14 +555,24 @@ function ConfettiBackground() {
 }
 
 function CornerArt() {
+  const { lang } = useLanguage();
+  // In MY the wheel's intelligence names move into a 2-column legend below
+  // the wheel (bottom-left). A full-size bottom-left plant would sit right
+  // behind that legend and make it hard to read, so for MY we shrink the
+  // plants and drop their opacity to keep them as a faint corner decoration
+  // that stays clear of the legend text. EN is unchanged (no legend there).
+  const isMy = lang === "my";
+  const size = isMy ? 132 : 360;
+  const cls = isMy ? "opacity-50" : undefined;
   return (
     <>
       <div className="pointer-events-none absolute bottom-3 left-3 z-0 hidden md:block">
         <Illustration
           src="corner-plant-left.png"
           alt=""
-          width={360}
-          height={360}
+          width={size}
+          height={size}
+          className={cls}
           real
         />
       </div>
@@ -570,8 +580,9 @@ function CornerArt() {
         <Illustration
           src="corner-plant-right.png"
           alt=""
-          width={360}
-          height={360}
+          width={size}
+          height={size}
+          className={cls}
           real
         />
       </div>

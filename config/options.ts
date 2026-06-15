@@ -2,6 +2,8 @@
 // Confirmed values from the human (DYEC).
 
 export const YEAR_OPTIONS: readonly string[] = [
+  "Pre-KG",
+  "KG",
   "Year 1",
   "Year 2",
   "Year 3",
