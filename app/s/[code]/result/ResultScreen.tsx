@@ -51,8 +51,9 @@ const itemVariants: Variants = {
 
 export function ResultScreen() {
   const { code, student, result, reset } = useStudentFlow();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const router = useRouter();
+  const isMy = lang === "my";
 
   useEffect(() => {
     if (!result) router.replace(`/s/${code}`);
@@ -157,7 +158,12 @@ export function ResultScreen() {
       >
         <Header studentId={result.studentId} />
 
-        <motion.div variants={itemVariants} className="mt-5 text-center md:mt-1">
+        <motion.div
+          variants={itemVariants}
+          className={
+            "text-center md:mt-1 " + (isMy ? "mt-6" : "mt-5")
+          }
+        >
           <h1 className="relative inline-block font-display text-3xl font-bold text-brand sm:text-4xl">
             <Sparkles
               className="absolute -left-7 -top-2 h-5 w-5 text-primary/70"
@@ -171,22 +177,44 @@ export function ResultScreen() {
               strokeWidth={0}
             />
           </h1>
-          <p className="mt-1 font-body text-sm text-body sm:text-base">
+          <p
+            className={
+              "mt-1 font-body text-sm text-body sm:text-base " +
+              (isMy ? "leading-loose" : "")
+            }
+          >
             {t(UI.result_subline)}
           </p>
         </motion.div>
 
-        <main className="grid flex-1 grid-cols-1 items-center gap-6 py-3 md:grid-cols-[1fr_1.1fr] md:gap-10">
+        <main
+          className={
+            "grid flex-1 grid-cols-1 items-center py-3 md:grid-cols-[1fr_1.1fr] md:gap-10 " +
+            // Burmese text is taller; give the card and wheel more room to
+            // breathe on mobile. EN keeps its original gap-6.
+            (isMy ? "gap-9 md:py-4" : "gap-6")
+          }
+        >
           {/* Mobile order: character/card first, wheel below. Desktop order:
               wheel on the left, card on the right. */}
           <motion.div
             variants={itemVariants}
-            className="order-2 flex items-center justify-center md:order-1"
+            className={
+              "order-2 md:order-1 " +
+              (isMy
+                ? "flex flex-col items-center"
+                : "flex items-center justify-center")
+            }
           >
+            {/* Myanmar labels are long phrases that overlap the wheel on a
+                narrow screen, so render the wheel without surrounding labels
+                and list the names in a clean legend below instead. */}
             <StrengthWheel
               scores={result.scores}
-              className="max-w-[400px]"
+              showLabels={!isMy}
+              className={isMy ? "max-w-[300px]" : "max-w-[400px]"}
             />
+            {isMy ? <WheelLegend scores={result.scores} /> : null}
           </motion.div>
 
           <motion.div variants={itemVariants} className="order-1 md:order-2">
@@ -276,7 +304,8 @@ function TopStrengthCard({
   topKey: IntelligenceKey;
   score: number;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const isMy = lang === "my";
   const intel = INTELLIGENCES[topKey];
   const Icon = intel.icon;
 
@@ -321,32 +350,96 @@ function TopStrengthCard({
       {/* The card itself. pt-[72px] reserves vertical space below where the
           character image overlaps, so heading and body text are never
           hidden behind the illustration. */}
-      <div className="w-full rounded-card border border-border bg-surface px-5 pb-5 pt-[78px] text-center shadow-card sm:pt-[92px]">
+      <div
+        className={
+          "w-full rounded-card border border-border bg-surface px-5 text-center shadow-card sm:pt-[92px] " +
+          // Burmese needs more interior breathing room top and bottom.
+          (isMy ? "pb-6 pt-[82px]" : "pb-5 pt-[78px]")
+        }
+      >
         <p className="font-body text-xs font-semibold uppercase tracking-wider text-body">
           {t(UI.result_top_strength)}
         </p>
         <h2
-          className="mt-1.5 font-display text-2xl font-bold leading-tight sm:text-[28px]"
+          className={
+            "font-display text-2xl font-bold leading-tight sm:text-[28px] " +
+            (isMy ? "mt-2.5" : "mt-1.5")
+          }
           style={{ color: intel.color }}
         >
           {t(intel.label)}
         </h2>
-        <div className="mt-2 inline-flex items-baseline gap-1 rounded-full bg-surface-soft px-3 py-1 font-display text-base font-bold text-ink">
+        <div
+          className={
+            "inline-flex items-baseline gap-1 rounded-full bg-surface-soft px-3 py-1 font-display text-base font-bold text-ink " +
+            (isMy ? "mt-3" : "mt-2")
+          }
+        >
           {score.toFixed(1)}
           <span className="font-body text-xs font-semibold text-body">
             / 5.0
           </span>
         </div>
-        <p className="mt-3 font-body text-sm leading-relaxed text-body">
+        <p
+          className={
+            "font-body text-sm text-body " +
+            // Looser line-height + a bigger gap for the dense Burmese block.
+            (isMy ? "mt-4 leading-loose" : "mt-3 leading-relaxed")
+          }
+        >
           {t(intel.description)}
         </p>
-        <div className="mt-4 flex items-center justify-center gap-2 rounded-full bg-surface-soft px-3 py-2">
+        <div
+          className={
+            "flex items-center justify-center gap-2 rounded-full bg-surface-soft px-3 " +
+            (isMy ? "mt-5 py-2.5" : "mt-4 py-2")
+          }
+        >
           <Sparkles className="h-3.5 w-3.5 shrink-0 text-brand" aria-hidden />
-          <span className="font-body text-xs font-semibold text-brand">
+          <span
+            className={
+              "font-body text-xs font-semibold text-brand " +
+              (isMy ? "leading-relaxed" : "")
+            }
+          >
             {t(UI.result_keep_growing)}
           </span>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ---------- Wheel legend (used for long Myanmar labels on mobile) ----------
+
+function WheelLegend({ scores }: { scores: Scores }) {
+  const { t } = useLanguage();
+  return (
+    <div className="mt-5 grid w-full max-w-[340px] grid-cols-2 gap-x-4 gap-y-2.5">
+      {INTELLIGENCE_ORDER.map((key) => {
+        const intel = INTELLIGENCES[key];
+        const Icon = intel.icon;
+        return (
+          <div key={key} className="flex items-center gap-2">
+            <span
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: hexWithAlpha(intel.color, 0.16) }}
+              aria-hidden
+            >
+              <Icon className="h-3.5 w-3.5" style={{ color: intel.color }} />
+            </span>
+            <span className="min-w-0 flex-1 font-body text-[11px] font-semibold leading-snug text-ink">
+              {t(intel.label)}
+            </span>
+            <span
+              className="shrink-0 font-display text-xs font-bold"
+              style={{ color: intel.color }}
+            >
+              {scores[key].toFixed(1)}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }

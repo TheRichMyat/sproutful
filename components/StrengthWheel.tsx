@@ -39,6 +39,12 @@ type Props = {
    * stays exactly as it was.
    */
   compact?: boolean;
+  /**
+   * Whether to render the intelligence names around the wheel. Default true.
+   * Set false when the caller shows the names elsewhere (e.g. a legend below
+   * the wheel) — used on the result screen for long Myanmar labels on mobile.
+   */
+  showLabels?: boolean;
 };
 
 // Geometry, in SVG units. The viewBox is square; CSS sizes the container.
@@ -89,6 +95,7 @@ export function StrengthWheel({
   scores,
   className,
   compact = false,
+  showLabels = true,
 }: Props) {
   const labelR = compact ? LABEL_R_COMPACT : LABEL_R_DEFAULT;
   return (
@@ -290,15 +297,16 @@ export function StrengthWheel({
       </div>
 
       {/* Labels: name + lucide icon outside each wedge, in its colour. */}
-      {INTELLIGENCE_ORDER.map((key, i) => (
-        <WheelLabel
-          key={`lab-${key}`}
-          intel={INTELLIGENCES[key]}
-          angleDeg={i * 45 + 22.5}
-          labelRadius={labelR}
-          compact={compact}
-        />
-      ))}
+      {showLabels &&
+        INTELLIGENCE_ORDER.map((key, i) => (
+          <WheelLabel
+            key={`lab-${key}`}
+            intel={INTELLIGENCES[key]}
+            angleDeg={i * 45 + 22.5}
+            labelRadius={labelR}
+            compact={compact}
+          />
+        ))}
     </div>
   );
 }
