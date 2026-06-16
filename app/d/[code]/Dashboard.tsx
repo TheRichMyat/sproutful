@@ -34,9 +34,6 @@ import {
 } from "lucide-react";
 
 import { Logo } from "@/components/Logo";
-import { LanguageToggle } from "@/components/LanguageToggle";
-import { useLanguage } from "@/context/language";
-import { UI, format } from "@/lib/i18n";
 import { deleteResult, fetchResults, type ResultRow } from "@/lib/api";
 import {
   INTELLIGENCES,
@@ -104,7 +101,6 @@ function DashboardShell({
   // The fetched rows live in state so a confirmed delete can drop one row
   // from the on-screen list (the "Showing X of Y" count and pagination are
   // derived from this, so they update automatically).
-  const { t } = useLanguage();
   const [results, setResults] = useState<ResultRow[]>(initialResults);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -177,7 +173,7 @@ function DashboardShell({
                   />
                 ) : (
                   <div className="flex h-full min-h-[160px] items-center justify-center px-6 py-10 text-center font-body text-sm text-body">
-                    {format(t(UI.dash_no_match), { query })}
+                    No students match &ldquo;{query}&rdquo;.
                   </div>
                 )}
               </div>
@@ -207,10 +203,7 @@ function TopNav({ schoolName }: { schoolName: string }) {
     <header className="border-b border-border bg-surface">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-3">
         <Logo />
-        <div className="flex items-center gap-3">
-          <LanguageToggle />
-          <SchoolChip schoolName={schoolName} />
-        </div>
+        <SchoolChip schoolName={schoolName} />
       </div>
     </header>
   );
@@ -219,21 +212,19 @@ function TopNav({ schoolName }: { schoolName: string }) {
 // ---------- Title section (sits below the nav) ----------
 
 function TitleSection({ schoolName }: { schoolName: string }) {
-  const { t } = useLanguage();
   return (
     <div>
       <h1 className="font-display text-2xl font-bold text-ink">
-        {t(UI.dash_title)}
+        Student Results
       </h1>
       <p className="mt-0.5 font-body text-sm text-body">
-        {format(t(UI.dash_subtitle), { school: schoolName })}
+        {`${schoolName} — View and analyse your students' multiple intelligences results.`}
       </p>
     </div>
   );
 }
 
 function SchoolChip({ schoolName }: { schoolName: string }) {
-  const { t } = useLanguage();
   return (
     <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-2.5 py-1 shadow-sm">
       <div
@@ -247,7 +238,7 @@ function SchoolChip({ schoolName }: { schoolName: string }) {
           {schoolName}
         </div>
         <div className="font-body text-[10px] font-semibold uppercase tracking-wider text-body">
-          {t(UI.dash_school)}
+          School
         </div>
       </div>
     </div>
@@ -267,7 +258,6 @@ function Toolbar({
   onExport: () => void;
   canExport: boolean;
 }) {
-  const { t } = useLanguage();
   return (
     <div className="flex items-center gap-3">
       <div className="relative flex-1">
@@ -281,7 +271,7 @@ function Toolbar({
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             onQuery(e.target.value)
           }
-          placeholder={t(UI.dash_search_placeholder)}
+          placeholder="Search by student name or ID"
           className="w-full rounded-input border border-border bg-surface py-2.5 pl-9 pr-3 font-body text-sm text-ink placeholder:text-body/70 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
         />
       </div>
@@ -292,7 +282,7 @@ function Toolbar({
         className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-4 font-body text-sm font-bold text-white shadow-card transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Download className="h-4 w-4" aria-hidden />
-        {t(UI.dash_export)}
+        Export Report
       </button>
     </div>
   );
@@ -324,7 +314,6 @@ function ResultsTable({
   code: string;
   onDeleted: (studentId: string) => void;
 }) {
-  const { t } = useLanguage();
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full border-collapse">
@@ -340,19 +329,18 @@ function ResultsTable({
         </colgroup>
         <thead>
           <tr className="border-b border-border bg-surface-soft/60 text-left">
-            <Th sticky>{t(UI.dash_col_student)}</Th>
-            <ThCenter>{t(UI.dash_col_year)}</ThCenter>
-            <ThCenter>{t(UI.dash_col_class)}</ThCenter>
+            <Th sticky>Student</Th>
+            <ThCenter>Year</ThCenter>
+            <ThCenter>Class</ThCenter>
             {INTELLIGENCE_ORDER.map((key) => {
               const intel = INTELLIGENCES[key];
               const Icon = intel.icon;
-              const fullLabel = t(intel.label);
-              const short = fullLabel.replace(/\s*Smart$/i, "");
+              const short = intel.label.en.replace(/\s*Smart$/i, "");
               return (
                 <th
                   key={key}
                   className="px-1 py-2 text-center align-bottom"
-                  title={fullLabel}
+                  title={intel.label.en}
                 >
                   <div className="flex flex-col items-center gap-1">
                     <Icon
@@ -367,9 +355,9 @@ function ResultsTable({
                 </th>
               );
             })}
-            <ThCenter>{t(UI.dash_col_top_strength)}</ThCenter>
+            <ThCenter>Top Strength</ThCenter>
             <th className="px-2 py-2.5">
-              <span className="sr-only">{t(UI.dash_actions)}</span>
+              <span className="sr-only">Actions</span>
             </th>
           </tr>
         </thead>
@@ -423,7 +411,6 @@ function ResultRowView({
   code: string;
   onDeleted: (studentId: string) => void;
 }) {
-  const { t } = useLanguage();
   const topKey = topKeyOf(row);
   const topIntel = INTELLIGENCES[topKey];
   const TopIcon = topIntel.icon;
@@ -442,9 +429,11 @@ function ResultRowView({
         onDeleted(row.student_id);
         return;
       }
-      setError(t(UI.del_err_generic));
+      setError("We couldn't delete this result. Please try again.");
     } catch {
-      setError(t(UI.del_err_network));
+      setError(
+        "We couldn't delete this result. Check your connection and try again.",
+      );
     }
     setDeleting(false);
   }
@@ -502,9 +491,9 @@ function ResultRowView({
             <div
               className="truncate font-display text-xs font-bold"
               style={{ color: topIntel.color }}
-              title={t(topIntel.label)}
+              title={topIntel.label.en}
             >
-              {t(topIntel.label)}
+              {topIntel.label.en}
             </div>
             <div className="font-body text-[11px] font-semibold text-body">
               {row[topKey].toFixed(1)}
@@ -520,8 +509,8 @@ function ResultRowView({
             setConfirming(true);
           }}
           disabled={deleting}
-          aria-label={format(t(UI.del_aria), { name: row.name })}
-          title={t(UI.del_tooltip)}
+          aria-label={`Delete ${row.name}'s result`}
+          title="Delete result"
           className="inline-flex h-8 w-8 items-center justify-center rounded-full text-body/40 transition-colors hover:bg-primary/10 hover:text-primary focus-visible:bg-primary/10 focus-visible:text-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {deleting ? (
@@ -562,13 +551,12 @@ function ConfirmDeleteDialog({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
-  const { t } = useLanguage();
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4 text-left"
       role="dialog"
       aria-modal="true"
-      aria-label={format(t(UI.del_aria), { name })}
+      aria-label={`Delete ${name}'s result`}
       onClick={(e) => {
         // Click on the backdrop (not the card) cancels — unless deleting.
         if (e.target === e.currentTarget && !deleting) onCancel();
@@ -579,9 +567,11 @@ function ConfirmDeleteDialog({
           <Trash2 className="h-5 w-5 text-primary" aria-hidden />
         </div>
         <h2 className="font-display text-lg font-bold text-ink">
-          {format(t(UI.del_title), { name })}
+          Delete {name}&apos;s result?
         </h2>
-        <p className="mt-1 font-body text-sm text-body">{t(UI.del_subtitle)}</p>
+        <p className="mt-1 font-body text-sm text-body">
+          This can&apos;t be undone.
+        </p>
         {error ? (
           <p role="alert" className="mt-3 font-body text-xs text-primary">
             {error}
@@ -594,7 +584,7 @@ function ConfirmDeleteDialog({
             disabled={deleting}
             className="inline-flex h-10 items-center rounded-full border border-border bg-surface px-5 font-body text-sm font-bold text-body transition-colors hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {t(UI.del_cancel)}
+            Cancel
           </button>
           <button
             type="button"
@@ -605,10 +595,10 @@ function ConfirmDeleteDialog({
             {deleting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                {t(UI.del_deleting)}
+                Deleting…
               </>
             ) : (
-              t(UI.del_confirm)
+              "Delete"
             )}
           </button>
         </div>
@@ -626,13 +616,11 @@ function ScoreChip({
   color: string;
   isTop: boolean;
 }) {
-  const { t } = useLanguage();
-  const topLabel = t(UI.dash_col_top_strength);
   return (
     <span
       className="relative inline-flex h-6 w-11 items-center justify-center rounded-full font-display text-[11px] font-bold"
       style={{ backgroundColor: hexWithAlpha(color, 0.16), color }}
-      title={isTop ? topLabel : undefined}
+      title={isTop ? "Top strength" : undefined}
     >
       {value.toFixed(1)}
       {isTop ? (
@@ -641,7 +629,7 @@ function ScoreChip({
           style={{ color }}
           fill="currentColor"
           strokeWidth={0}
-          aria-label={topLabel}
+          aria-label="Top strength"
         />
       ) : null}
     </span>
@@ -677,16 +665,17 @@ function PaginationRow({
   totalPages: number;
   onPage: (p: number) => void;
 }) {
-  const { t } = useLanguage();
-  const noun = t(
-    total === 1 ? UI.dash_student_singular : UI.dash_student_plural,
-  );
   return (
     <div className="flex items-center justify-between font-body text-xs text-body">
-      <span>{format(t(UI.dash_showing), { start, end, total, noun })}</span>
+      <span>
+        Showing <span className="font-semibold text-ink">{start}</span> to{" "}
+        <span className="font-semibold text-ink">{end}</span> of{" "}
+        <span className="font-semibold text-ink">{total}</span>{" "}
+        {total === 1 ? "student" : "students"}
+      </span>
       <div className="flex items-center gap-1">
         <PagerButton
-          ariaLabel={t(UI.dash_prev_page)}
+          ariaLabel="Previous page"
           disabled={page <= 1}
           onClick={() => onPage(page - 1)}
         >
@@ -696,7 +685,7 @@ function PaginationRow({
           {page} / {totalPages}
         </span>
         <PagerButton
-          ariaLabel={t(UI.dash_next_page)}
+          ariaLabel="Next page"
           disabled={page >= totalPages}
           onClick={() => onPage(page + 1)}
         >
@@ -734,7 +723,6 @@ function PagerButton({
 // ---------- Footer banner ----------
 
 function FooterBanner() {
-  const { t } = useLanguage();
   return (
     <div className="flex items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-sm">
       <div
@@ -745,10 +733,10 @@ function FooterBanner() {
       </div>
       <div className="leading-tight">
         <div className="font-display text-sm font-bold text-ink">
-          {t(UI.dash_footer_title)}
+          Every child has a unique blend of strengths.
         </div>
         <div className="font-body text-xs text-body">
-          {t(UI.dash_footer_body)}
+          Use these insights to guide and support their learning journey.
         </div>
       </div>
     </div>
@@ -758,19 +746,17 @@ function FooterBanner() {
 // ---------- Transient states ----------
 
 function DashboardLoading() {
-  const { t } = useLanguage();
   return (
     <main className="flex flex-1 items-center justify-center px-6">
       <div className="flex flex-col items-center gap-3 text-body">
         <Loader2 className="h-7 w-7 animate-spin text-brand" aria-hidden />
-        <p className="font-body text-sm">{t(UI.dash_loading)}</p>
+        <p className="font-body text-sm">Loading student results…</p>
       </div>
     </main>
   );
 }
 
 function LinkNotFound() {
-  const { t } = useLanguage();
   return (
     <main className="flex flex-1 items-center justify-center px-6">
       <div className="max-w-md rounded-card bg-surface p-10 text-center shadow-card">
@@ -778,10 +764,11 @@ function LinkNotFound() {
           <Compass className="h-6 w-6 text-brand" aria-hidden />
         </div>
         <h1 className="font-display text-2xl font-bold text-ink">
-          {t(UI.linknotfound_title)}
+          Link not found
         </h1>
         <p className="mt-2 font-body text-body">
-          {t(UI.linknotfound_body_dashboard)}
+          This dashboard link doesn&apos;t look right. Please check the URL or
+          ask the Sproutful operator for the correct link.
         </p>
       </div>
     </main>
@@ -789,7 +776,6 @@ function LinkNotFound() {
 }
 
 function EmptyState() {
-  const { t } = useLanguage();
   return (
     <div className="flex flex-1 items-center justify-center rounded-card border border-dashed border-border bg-surface p-10 text-center">
       <div className="max-w-sm">
@@ -797,10 +783,11 @@ function EmptyState() {
           <Users className="h-6 w-6 text-brand" aria-hidden />
         </div>
         <h2 className="font-display text-lg font-bold text-ink">
-          {t(UI.dash_empty_title)}
+          No students have taken the assessment yet
         </h2>
         <p className="mt-1 font-body text-sm text-body">
-          {t(UI.dash_empty_body)}
+          Share your school&apos;s student link with your students to start
+          collecting results. They&apos;ll appear here as soon as they finish.
         </p>
       </div>
     </div>
