@@ -137,7 +137,7 @@ export const UI = {
   ),
   result_download: s("Download Report", "အစီရင်ခံစာကို ဒေါင်းလုဒ်ရယူရန်"),
   result_preparing: s("Preparing…"),
-  result_continue: s("Continue", "ရှေ့သို့ ဆက်သွားရန်"),
+  result_continue: s("Take a new test", "စာမေးပွဲအသစ် ပြန်ဖြေရန်"),
   result_pdf_err: s("We couldn't create the PDF. Please try again in a moment."),
   result_student_id_aria: s("Your student ID"),
   result_redirecting: s("Taking you back to the start…"),
